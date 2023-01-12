@@ -22,14 +22,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class registerFragment extends Fragment {
+public class RegisterFragment extends Fragment {
 
     NavController navController;
     private EditText emailEditText, passwordEditText;
     private Button registerButton;
     private FirebaseAuth mAuth;
 
-    public registerFragment() {}
+    public RegisterFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

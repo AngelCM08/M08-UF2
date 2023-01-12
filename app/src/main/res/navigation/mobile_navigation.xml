@@ -17,17 +17,17 @@
         tools:layout="@layout/fragment_sign_out" />
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.proyecto_m8_uf2.registerFragment"
+        android:name="com.example.proyecto_m8_uf2.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.proyecto_m8_uf2.profileFragment"
+        android:name="com.example.proyecto_m8_uf2.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.proyecto_m8_uf2.homeFragment"
+        android:name="com.example.proyecto_m8_uf2.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
 </navigation>
