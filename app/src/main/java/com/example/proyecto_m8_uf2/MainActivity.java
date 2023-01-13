@@ -20,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.proyecto_m8_uf2.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder()
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.homeFragment, R.id.profileFragment, R.id.signOutFragment
+        )
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -56,15 +59,20 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if(user != null){
-                    Glide.with(MainActivity.this)
-                            .load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString())
-                            .circleCrop()
-                            .into(photo);
+                    if(user.getPhotoUrl() != null){
+                        Glide.with(MainActivity.this)
+                                .load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString())
+                                .circleCrop()
+                                .into(photo);
+                    }
                     name.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                     email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
                 }
             }
         });
+        FirebaseFirestore.getInstance().setFirestoreSettings(new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build());
     }
 
     @Override

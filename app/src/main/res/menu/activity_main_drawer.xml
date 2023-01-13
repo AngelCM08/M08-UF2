@@ -8,9 +8,9 @@
             android:title="@string/menu_home" />
         <item
             android:id="@+id/profileFragment"
-            android:title="@string/menu_home" />
+            android:title="Profile" />
         <item
             android:id="@+id/signOutFragment"
-            android:title="@string/menu_home" />
+            android:title="SignOut" />
     </group>
 </menu>
