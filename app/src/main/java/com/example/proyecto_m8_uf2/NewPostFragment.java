@@ -1,9 +1,11 @@
 package com.example.proyecto_m8_uf2;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -16,10 +18,16 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class NewPostFragment extends Fragment {
 
@@ -42,6 +50,7 @@ public class NewPostFragment extends Fragment {
         postConentEditText = view.findViewById(R.id.postContentEditText);
 
         publishButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
                 publicar();
@@ -51,6 +60,7 @@ public class NewPostFragment extends Fragment {
         navController = Navigation.findNavController(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void publicar() {
         String postContent = postConentEditText.getText().toString();
 
@@ -64,6 +74,7 @@ public class NewPostFragment extends Fragment {
         guardarEnFirestore(postContent);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void guardarEnFirestore(String postContent) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String foto;
@@ -73,7 +84,7 @@ public class NewPostFragment extends Fragment {
         }else{
             foto = null;
         }
-        Post post = new Post(user.getUid(), user.getDisplayName(), foto, postContent);
+        Post post = new Post(user.getUid(), user.getDisplayName(), foto, postContent, Timestamp.now());
 
         FirebaseFirestore.getInstance().collection("posts")
                 .add(post)

@@ -16,46 +16,60 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             app:srcCompat="@drawable/user" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="10dp">
+
             <TextView
                 android:id="@+id/authorTextView"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:text="Author"/>
+                android:text="Author" />
+
             <TextView
                 android:id="@+id/contentTextView"
-                android:textSize="20sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="Contenido"/>
+                android:text="Contenido"
+                android:textSize="20sp" />
+
             <LinearLayout
                 android:id="@+id/likeLinearLayout"
-                android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal">
+
                 <ImageView
                     android:id="@+id/likeImageView"
-                    app:srcCompat="@drawable/like_on"
-                    android:adjustViewBounds="true"
                     android:layout_width="20dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"/>
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    app:srcCompat="@drawable/like_on" />
+
                 <TextView
                     android:id="@+id/numLikesTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
                     android:layout_gravity="center_vertical"
-                    android:text="200K"/>
+                    android:layout_marginStart="4dp"
+                    android:text="200K" />
             </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="viewEnd" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
