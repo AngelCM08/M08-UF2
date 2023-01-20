@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_gravity="end"
     app:cardUseCompatPadding="true">
+
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:padding="10dp">
+
         <ImageView
             android:id="@+id/photoImageView"
             android:layout_width="60dp"
@@ -38,6 +40,13 @@
                 android:layout_marginTop="5dp"
                 android:text="Contenido"
                 android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/mediaImage"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true" />
 
             <LinearLayout
                 android:id="@+id/likeLinearLayout"
@@ -71,5 +80,13 @@
             android:layout_weight="1"
             android:text="TextView"
             android:textAlignment="viewEnd" />
+
+        <ImageView
+            android:id="@+id/trashImageView"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:contentDescription=""
+            app:srcCompat="@drawable/trash" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
