@@ -4,6 +4,7 @@ import com.google.firebase.Timestamp;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class Post {
     public String uid;

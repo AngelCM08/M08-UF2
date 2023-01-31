@@ -88,5 +88,13 @@
             android:layout_gravity="bottom"
             android:contentDescription=""
             app:srcCompat="@drawable/trash" />
+
+        <ImageView
+            android:id="@+id/retweetImageView"
+            android:layout_width="20dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:contentDescription=""
+            app:srcCompat="@drawable/retweet" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

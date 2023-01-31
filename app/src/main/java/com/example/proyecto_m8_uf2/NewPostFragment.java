@@ -38,16 +38,12 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Date;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class NewPostFragment extends Fragment {
 
     Button publishButton;
-    EditText postConentEditText;
+    EditText postContentEditText;
     NavController navController;
     public AppViewModel appViewModel;
     private Uri mediaUri;
@@ -65,7 +61,7 @@ public class NewPostFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         publishButton = view.findViewById(R.id.publishButton);
-        postConentEditText = view.findViewById(R.id.postContentEditText);
+        postContentEditText = view.findViewById(R.id.postContentEditText);
 
         publishButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -93,17 +89,15 @@ public class NewPostFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void publicar() {
-        String postContent = postConentEditText.getText().toString();
-        if(TextUtils.isEmpty(postContent)){
-            postConentEditText.setError("Required");
+        String postContent = postContentEditText.getText().toString();
+        if (TextUtils.isEmpty(postContent)) {
+            postContentEditText.setError("Required");
             return;
         }
         publishButton.setEnabled(false);
         if (mediaTipo == null) {
             guardarEnFirestore(postContent, null);
-        }
-        else
-        {
+        } else {
             pujaIguardarEnFirestore(postContent);
         }
     }
@@ -113,15 +107,14 @@ public class NewPostFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Post post = new Post(user.getUid(), user.getDisplayName(), (user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null),
                 postContent, mediaUrl, mediaTipo, Timestamp.now());
-        //Necesito añadir en postID el valor del Id generado en firestore, o enviar un id generado aquí y almacenarlo. Pinta a que tiene que ser fuera del OnSuccess porque no se almacena en el objeto post, por eso lo subraya el IntellIJ.
         FirebaseFirestore.getInstance().collection("posts")
                 .add(post)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        post.postId = documentReference.getId();
                         navController.popBackStack();
-                        appViewModel.setMediaSeleccionado( null, null);
+                        appViewModel.setMediaSeleccionado(null, null);
+                        documentReference.update("postId", documentReference.getId());
                     }
                 });
     }
@@ -156,18 +149,22 @@ public class NewPostFragment extends Fragment {
                             "audio");
                 }
             });
+
     private void seleccionarImagen() {
         mediaTipo = "image";
         galeria.launch("image/*");
     }
+
     private void seleccionarVideo() {
         mediaTipo = "video";
         galeria.launch("video/*");
     }
+
     private void seleccionarAudio() {
         mediaTipo = "audio";
         galeria.launch("audio/*");
     }
+
     private void tomarFoto() {
         try {
             mediaUri = FileProvider.getUriForFile(requireContext(),
@@ -175,8 +172,10 @@ public class NewPostFragment extends Fragment {
                             ".jpg",
                             requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)));
             camaraFotos.launch(mediaUri);
-        } catch (IOException e) {}
+        } catch (IOException e) {
+        }
     }
+
     private void tomarVideo() {
         try {
             mediaUri = FileProvider.getUriForFile(requireContext(),
@@ -184,8 +183,10 @@ public class NewPostFragment extends Fragment {
                             ".mp4",
                             requireContext().getExternalFilesDir(Environment.DIRECTORY_MOVIES)));
             camaraVideos.launch(mediaUri);
-        } catch (IOException e) {}
+        } catch (IOException e) {
+        }
     }
+
     private void grabarAudio() {
         grabadoraAudio.launch(new
                 Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION));

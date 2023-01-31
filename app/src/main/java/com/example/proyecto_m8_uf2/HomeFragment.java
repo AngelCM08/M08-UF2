@@ -20,13 +20,23 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 public class HomeFragment extends Fragment {
     NavController navController;
@@ -83,24 +93,20 @@ public class HomeFragment extends Fragment {
 
             //Paperera de publicacions pròpies
             if(Objects.equals(post.uid, AuthUid)){
+                holder.retweetImageView.setVisibility(View.GONE);
+
                 holder.trashImageView.setVisibility(View.VISIBLE);
                 holder.trashImageView.setOnClickListener(view -> {
-                    System.out.println("***************************************************** ");
-                    System.out.println(post);
-                    /**
-                     *
-                     *
-                     *
-                     *
-                     *
-                     *
-                     *
-                     *
-                     * *********************************************
-                     * ***/
-                    //eliminarPost();
+                    eliminarPost(post);
                 });
-            }else holder.trashImageView.setVisibility(View.GONE);
+            }else {
+                holder.trashImageView.setVisibility(View.GONE);
+
+                holder.retweetImageView.setVisibility(View.VISIBLE);
+                holder.retweetImageView.setOnClickListener(view -> {
+                    retweetPost(post);
+                });
+            }
 
             // Gestion de likes
             final String postKey = getSnapshots().getSnapshot(position).getId();
@@ -136,17 +142,43 @@ public class HomeFragment extends Fragment {
 
         private void eliminarPost(Post post) {
             FirebaseFirestore.getInstance().collection("posts").document(post.postId)
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            //Eliminar objeto post de la app
-                        }
-                    });
+                    .delete();
+        }
+
+        private void retweetPost(Post post) {
+            DocumentReference dr = FirebaseFirestore.getInstance().collection("posts").document(post.postId);
+            Task<DocumentSnapshot> copiedPost = dr.get();
+            copiedPost.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    Map<String, Object> data = documentSnapshot.getData();
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    Post post = new Post(
+                            user.getUid(),
+                            user.getDisplayName(),
+                            (user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null),
+                            (data.get("content") != null ? data.get("content").toString() : null),
+                            (data.get("mediaUrl") != null ? data.get("mediaUrl").toString() : null),
+                            (data.get("mediaType") != null ? data.get("mediaType").toString() : null),
+                            Timestamp.now()
+                    );
+
+                    FirebaseFirestore.getInstance().collection("posts")
+                            .add(post)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    navController.popBackStack();
+                                    appViewModel.setMediaSeleccionado(null, null);
+                                    documentReference.update("postId", documentReference.getId());
+                                }
+                            });
+                }
+            });
         }
 
         class PostViewHolder extends RecyclerView.ViewHolder {
-            ImageView authorPhotoImageView, likeImageView, mediaImageView, trashImageView;
+            ImageView authorPhotoImageView, likeImageView, mediaImageView, trashImageView, retweetImageView;
             TextView authorTextView, contentTextView, numLikesTextView, dateTextView;
 
             PostViewHolder(@NonNull View itemView) {
@@ -160,6 +192,7 @@ public class HomeFragment extends Fragment {
                 numLikesTextView = itemView.findViewById(R.id.numLikesTextView);
                 dateTextView = itemView.findViewById(R.id.dateTextView);
                 trashImageView = itemView.findViewById(R.id.trashImageView);
+                retweetImageView = itemView.findViewById(R.id.retweetImageView);
             }
         }
     }
