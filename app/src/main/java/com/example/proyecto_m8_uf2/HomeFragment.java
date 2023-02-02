@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -146,8 +147,7 @@ public class HomeFragment extends Fragment {
         }
 
         private void retweetPost(Post post) {
-            DocumentReference dr = FirebaseFirestore.getInstance().collection("posts").document(post.postId);
-            Task<DocumentSnapshot> copiedPost = dr.get();
+            Task<DocumentSnapshot> copiedPost = FirebaseFirestore.getInstance().collection("posts").document(post.postId).get();
             copiedPost.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -168,7 +168,6 @@ public class HomeFragment extends Fragment {
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
-                                    navController.popBackStack();
                                     appViewModel.setMediaSeleccionado(null, null);
                                     documentReference.update("postId", documentReference.getId());
                                 }
