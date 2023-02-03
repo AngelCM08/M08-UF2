@@ -107,7 +107,7 @@ public class NewPostFragment extends Fragment {
     private void guardarEnFirestore(String postContent, String mediaUrl) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         Post post = new Post(user.getUid(), user.getDisplayName(), (user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null),
-                postContent, mediaUrl, mediaTipo, Timestamp.now());
+                postContent, mediaUrl, mediaTipo, Timestamp.now(), "");
         FirebaseFirestore.getInstance().collection("posts")
                 .add(post)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

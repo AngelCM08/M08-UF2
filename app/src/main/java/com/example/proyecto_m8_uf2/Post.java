@@ -14,14 +14,14 @@ public class Post {
     public String content;
     public String mediaUrl;
     public String mediaType;
-    public Map<String, Boolean> retweet = new HashMap<>();
+    public String retweet;
     public Map<String, Boolean> likes = new HashMap<>();
     public com.google.firebase.Timestamp date;
 
     // Constructor vacio requerido por Firestore
     public Post() {}
 
-    public Post(String uid, String author, String authorPhotoUrl, String content, String mediaUrl, String mediaType, Timestamp date) {
+    public Post(String uid, String author, String authorPhotoUrl, String content, String mediaUrl, String mediaType, Timestamp date, String retweet) {
         this.uid = uid;
         this.author = author;
         this.authorPhotoUrl = authorPhotoUrl;
@@ -29,5 +29,6 @@ public class Post {
         this.mediaUrl = mediaUrl;
         this.mediaType = mediaType;
         this.date = date;
+        this.retweet = retweet;
     }
 }

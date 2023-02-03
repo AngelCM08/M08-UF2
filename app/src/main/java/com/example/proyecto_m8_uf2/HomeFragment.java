@@ -124,6 +124,12 @@ public class HomeFragment extends Fragment {
                                 FieldValue.delete() : true);
             });
 
+            // Gestion de retweets
+            if(!(post.retweet == null))
+                holder.retweetTextView.setText(post.retweet);
+                holder.retweetTextView.setVisibility(View.VISIBLE);
+
+
             // Miniatura de media
             if (post.mediaUrl != null) {
                 holder.mediaImageView.setVisibility(View.VISIBLE);
@@ -139,7 +145,6 @@ public class HomeFragment extends Fragment {
             } else {
                 holder.mediaImageView.setVisibility(View.GONE);
             }
-
         }
 
         private void eliminarPost(Post post) {
@@ -161,7 +166,8 @@ public class HomeFragment extends Fragment {
                             (data.get("content") != null ? data.get("content").toString() : null),
                             (data.get("mediaUrl") != null ? data.get("mediaUrl").toString() : null),
                             (data.get("mediaType") != null ? data.get("mediaType").toString() : null),
-                            Timestamp.now()
+                            Timestamp.now(),
+                            (data.get("author") != null ? data.get("author").toString() : null)
                     );
 
                     FirebaseFirestore.getInstance().collection("posts")
@@ -182,7 +188,7 @@ public class HomeFragment extends Fragment {
 
         class PostViewHolder extends RecyclerView.ViewHolder {
             ImageView authorPhotoImageView, likeImageView, mediaImageView, trashImageView, retweetImageView;
-            TextView authorTextView, contentTextView, numLikesTextView, dateTextView;
+            TextView authorTextView, contentTextView, numLikesTextView, dateTextView, retweetTextView;
 
             PostViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -196,6 +202,7 @@ public class HomeFragment extends Fragment {
                 dateTextView = itemView.findViewById(R.id.dateTextView);
                 trashImageView = itemView.findViewById(R.id.trashImageView);
                 retweetImageView = itemView.findViewById(R.id.retweetImageView);
+                retweetTextView = itemView.findViewById(R.id.retweetTextView);
             }
         }
     }
