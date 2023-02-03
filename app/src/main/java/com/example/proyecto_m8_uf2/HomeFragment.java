@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -15,14 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -33,12 +29,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 
 public class HomeFragment extends Fragment {
     NavController navController;
@@ -159,28 +152,53 @@ public class HomeFragment extends Fragment {
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Map<String, Object> data = documentSnapshot.getData();
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    Post post = new Post(
-                            user.getUid(),
-                            user.getDisplayName(),
-                            (user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null),
-                            (data.get("content") != null ? data.get("content").toString() : null),
-                            (data.get("mediaUrl") != null ? data.get("mediaUrl").toString() : null),
-                            (data.get("mediaType") != null ? data.get("mediaType").toString() : null),
-                            Timestamp.now(),
-                            (data.get("author") != null ? data.get("author").toString() : null)
-                    );
-
-                    FirebaseFirestore.getInstance().collection("posts")
-                            .add(post)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    FirebaseFirestore.getInstance().collection("users").document(user.getUid())
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    appViewModel.setMediaSeleccionado(null, null);
-                                    documentReference.update("postId", documentReference.getId());
-                                    int viewId = Objects.requireNonNull(navController.getCurrentDestination()).getId();
-                                    navController.popBackStack();
-                                    navController.navigate(viewId);
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    String userPhoto, author = null;
+                                    if (documentSnapshot.exists()) {
+                                        if (documentSnapshot.get("profileName") != null)
+                                            author = documentSnapshot.get("profileName").toString();
+                                        else author = user.getEmail();
+
+                                        if (documentSnapshot.get("profilePhoto") != null) {
+                                            userPhoto = documentSnapshot.get("profilePhoto").toString();
+                                        } else {
+                                            userPhoto = "R.drawable.user";
+                                        }
+                                    } else {
+                                        author = user.getDisplayName();
+                                        userPhoto = user.getPhotoUrl().toString();
+                                    }
+                                    Post post = new Post(
+                                            user.getUid(),
+                                            author,
+                                            userPhoto,
+                                            (data.get("content") != null ? data.get("content").toString() : null),
+                                            (data.get("mediaUrl") != null ? data.get("mediaUrl").toString() : null),
+                                            (data.get("mediaType") != null ? data.get("mediaType").toString() : null),
+                                            Timestamp.now(),
+                                            data.get("author").toString()
+                                    );
+
+                                    FirebaseFirestore.getInstance().collection("posts")
+                                            .add(post)
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                @Override
+                                                public void onSuccess(DocumentReference documentReference) {
+                                                    documentReference.update("docid", documentReference.getId());
+                                                    appViewModel.setMediaSeleccionado(null, null);
+
+                                                    //SCROLL UP
+                                                    int viewId = Objects.requireNonNull(navController.getCurrentDestination()).getId();
+                                                    navController.popBackStack();
+                                                    navController.navigate(viewId);
+                                                }
+                                            });
                                 }
+
                             });
                 }
             });

@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.proyecto_m8_uf2.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
@@ -59,14 +61,26 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if(user != null){
-                    if(user.getPhotoUrl() != null){
-                        Glide.with(MainActivity.this)
-                                .load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString())
-                                .circleCrop()
-                                .into(photo);
-                    }
-                    name.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                    email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                    FirebaseFirestore.getInstance().collection("users").document(user.getUid())
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    if (documentSnapshot.exists()) {
+                                        name.setText(documentSnapshot.get("profileName").toString());
+                                        if (documentSnapshot.get("profilePhoto") == null) {
+                                            Glide.with(MainActivity.this).load(R.drawable.user).circleCrop().into(photo);
+                                        } else {
+                                            Glide.with(MainActivity.this).load(documentSnapshot.get("profilePhoto")).circleCrop().into(photo);
+                                        }
+                                    } else {
+                                        name.setText(user.getDisplayName());
+                                        Glide.with(MainActivity.this).load(user.getPhotoUrl()).into(photo);
+                                    }
+
+                                }
+                            });
+                    email.setText(user.getEmail());
                 }
             }
         });

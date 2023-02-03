@@ -106,8 +106,25 @@ public class NewPostFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void guardarEnFirestore(String postContent, String mediaUrl) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        Post post = new Post(user.getUid(), user.getDisplayName(), (user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null),
-                postContent, mediaUrl, mediaTipo, Timestamp.now(), "");
+        FirebaseFirestore.getInstance().collection("users").document(user.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    String userPhoto, author;
+                    if (documentSnapshot.exists()) {
+                        if (documentSnapshot.get("profileName") != null)
+                            author = documentSnapshot.get("profileName").toString();
+                        else author = user.getEmail();
+
+                        if (documentSnapshot.get("profilePhoto") != null) {
+                            userPhoto = documentSnapshot.get("profilePhoto").toString();
+                        } else {
+                            userPhoto = "R.drawable.user";
+                        }
+                    } else {
+                        author = user.getDisplayName();
+                        userPhoto = user.getPhotoUrl().toString();
+                    }
+        Post post = new Post(user.getUid(), author, userPhoto, postContent, mediaUrl, mediaTipo, Timestamp.now(), "");
         FirebaseFirestore.getInstance().collection("posts")
                 .add(post)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -118,6 +135,7 @@ public class NewPostFragment extends Fragment {
                         documentReference.update("postId", documentReference.getId());
                     }
                 });
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

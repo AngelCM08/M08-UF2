@@ -21,15 +21,21 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterFragment extends Fragment {
 
+    private EditText emailEditText, passwordEditText, nameEditText;
     NavController navController;
-    private EditText emailEditText, passwordEditText;
     private Button registerButton;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore mFirestore;
 
-    public RegisterFragment() {}
+    public RegisterFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,6 +50,8 @@ public class RegisterFragment extends Fragment {
 
         emailEditText = view.findViewById(R.id.emailEditText);
         passwordEditText = view.findViewById(R.id.passwordEditText);
+        nameEditText = view.findViewById(R.id.nameEditText);
+
         registerButton = view.findViewById(R.id.registerButton);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
@@ -51,9 +59,10 @@ public class RegisterFragment extends Fragment {
             public void onClick(View view) {
                 crearCuenta();
             }
-        });
 
+        });
         mAuth = FirebaseAuth.getInstance();
+        mFirestore = FirebaseFirestore.getInstance();
     }
 
     private void crearCuenta() {
@@ -68,7 +77,13 @@ public class RegisterFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            actualizarUI(mAuth.getCurrentUser());
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            actualizarUI(user);
+                            Map<String, Object> userData = new HashMap<>();
+                            userData.put("id", user.getUid());
+                            userData.put("profilePhoto", null);
+                            userData.put("profileName", nameEditText.getText().toString());
+                            mFirestore.collection("users").document(user.getUid()).set(userData);
                         } else {
                             Snackbar.make(requireView(), "Error: " + task.getException(), Snackbar.LENGTH_LONG).show();
 
@@ -80,7 +95,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void actualizarUI(FirebaseUser currentUser) {
-        if(currentUser != null){
+        if (currentUser != null) {
             navController.navigate(R.id.homeFragment);
         }
     }
@@ -103,5 +118,6 @@ public class RegisterFragment extends Fragment {
         }
 
         return valid;
+
     }
 }
