@@ -14,6 +14,7 @@ public class Post {
     public String content;
     public String mediaUrl;
     public String mediaType;
+    public Map<String, Boolean> retweet = new HashMap<>();
     public Map<String, Boolean> likes = new HashMap<>();
     public com.google.firebase.Timestamp date;
 
