@@ -71,7 +71,6 @@ public class HomeFragment extends Fragment {
 
     class PostsAdapter extends FirestoreRecyclerAdapter<Post, PostsAdapter.PostViewHolder> {
         public PostsAdapter(@NonNull FirestoreRecyclerOptions<Post> options) {super(options);}
-
         @NonNull
         @Override
         public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
