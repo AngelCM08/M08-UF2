@@ -118,9 +118,10 @@ public class HomeFragment extends Fragment {
             });
 
             // Gestion de retweets
-            if(!(post.retweet == null))
-                holder.retweetTextView.setText(post.retweet);
+            if(!(post.retweet.equals(""))){
+                holder.retweetTextView.setText(post.retweet+" dijo:");
                 holder.retweetTextView.setVisibility(View.VISIBLE);
+            }
 
 
             // Miniatura de media
@@ -188,7 +189,7 @@ public class HomeFragment extends Fragment {
                                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                                 @Override
                                                 public void onSuccess(DocumentReference documentReference) {
-                                                    documentReference.update("docid", documentReference.getId());
+                                                    documentReference.update("postId", documentReference.getId());
                                                     appViewModel.setMediaSeleccionado(null, null);
 
                                                     //SCROLL UP
